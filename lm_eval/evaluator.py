@@ -79,6 +79,7 @@ def simple_evaluate(
         )
 
     task_dict = lm_eval.tasks.get_task_dict(tasks)
+    print(task_dict)
 
     if check_integrity:
         run_task_tests(task_list=tasks)
@@ -215,7 +216,12 @@ def evaluate(
             ctx = task.fewshot_context(
                 doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
             )
+            print("Task", task)
+            print("doc", doc)
+            print("ctx", ctx)
             reqs = task.construct_requests(doc, ctx)
+            print("reqs", reqs)
+            print(stop)
             if not isinstance(reqs, (list, tuple)):
                 reqs = [reqs]
             for i, req in enumerate(reqs):
@@ -235,6 +241,7 @@ def evaluate(
 
     # all responses for each (task, doc)
     process_res_queue = collections.defaultdict(list)
+
 
     # execute each type of request
     for reqtype, reqs in requests.items():

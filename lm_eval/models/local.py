@@ -3,7 +3,7 @@ import torch
 from lm_eval.base import BaseLM
 
 
-class HFLM(BaseLM):
+class Local(BaseLM):
     def __init__(
         self,
         device="cuda",
@@ -33,14 +33,13 @@ class HFLM(BaseLM):
                 else torch.device("cpu")
             )
 
-        # TODO: update this to be less of a hack once subfolder is fixed in HF
         revision = revision + ("/" + subfolder if subfolder is not None else "")
 
-        self.gpt2 = transformers.AutoModelForCausalLM.from_pretrained(
+        self.model = transformers.AutoModelForCausalLM.from_pretrained(
             pretrained,
             revision=revision,
         ).to(self.device)
-        self.gpt2.eval()
+        self.model.eval()
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(
             pretrained if tokenizer is None else tokenizer,
@@ -85,10 +84,10 @@ class HFLM(BaseLM):
     @property
     def max_length(self):
         try:
-            return self.gpt2.config.n_ctx
+            return self.model.config.n_ctx
         except AttributeError:
             # gptneoconfig doesn't have n_ctx apparently
-            return self.gpt2.config.max_position_embeddings
+            return self.model.config.max_position_embeddings
 
     @property
     def max_gen_toks(self):
@@ -119,13 +118,10 @@ class HFLM(BaseLM):
         logits returned from the model
         """
         with torch.no_grad():
-            return self.gpt2(inps)[0]
+            return self.model(inps)[0]
 
     def _model_generate(self, context, max_length, eos_token_id):
-        return self.gpt2.generate(
+        return self.model.generate(
             context, max_length=max_length, eos_token_id=eos_token_id, do_sample=False
         )
 
-
-# for backwards compatibility
-GPT2LM = HFLM

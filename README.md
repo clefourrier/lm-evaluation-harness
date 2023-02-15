@@ -1,5 +1,7 @@
 # Language Model Evaluation Harness
 
+python main.py     --model local --model_args "pretrained=../gpt2_local/"     --tasks arithmetic_2da     --device "cpu" --limit 10
+
 ![](https://github.com/EleutherAI/lm-evaluation-harness/workflows/Build/badge.svg)
 [![codecov](https://codecov.io/gh/EleutherAI/lm-evaluation-harness/branch/master/graph/badge.svg?token=JSG3O2427J)](https://codecov.io/gh/EleutherAI/lm-evaluation-harness)
 
